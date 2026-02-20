@@ -4,7 +4,7 @@ event_date=2026-07-18
 coming_soon=We’re Getting Married
 preparing_text=Sedang mempersiapkan momen terindah dalam hidup kami
 
-countdown_prefix=Tinggal 
+countdown_prefix=Tinggal &nbsp; 
 countdown_number_prefix=<b style="color:#ffd700; font-size:1.35em; text-shadow:0 0 15px #ffd70080;">
 countdown_number_suffix=</b>
 countdown_suffix= &nbsp;hari lagi <i>acaranya</i> 💍
