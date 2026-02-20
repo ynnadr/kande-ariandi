@@ -13,7 +13,7 @@ images=IMG_5160.JPG,IMG_5126.JPG,IMG_5136.JPG,IMG_5141.JPG,IMG_5232.JPG,IMG_5201
 music_file=musik/song1.mp3
 
 font_family=Dancing Script
-name_size=5.2rem
-coming_size=2rem
-preparing_size=1.7rem
+name_size=5rem
+coming_size=1.6rem
+preparing_size=1.6rem
 countdown_size=1.6rem
