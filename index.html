@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Pernikahan Kami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&amp;family=Inter:wght@400;700&amp;display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&display=swap');
+
+        :root {
+            --font-family: 'Dancing Script', cursive;
+            --name-size: 4.8rem;
+            --coming-size: 1.8rem;
+            --preparing-size: 1.6rem;
+            --countdown-size: 5.5rem;
+            --text-color: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+            position: relative;
+        }
+
+        /* Background Carousel */
+        #bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: opacity 1.8s ease-in-out;
+            opacity: 0;
+        }
+
+        .bg.active {
+            opacity: 1;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.55));
+        }
+
+        .content {
+            max-width: 90vw;
+        }
+
+        .names {
+            font-size: var(--name-size);
+            line-height: 1.1;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.7);
+        }
+
+        .ampersand {
+            font-size: 3rem;
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+
+        .coming-soon {
+            font-size: var(--coming-size);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            opacity: 0.95;
+        }
+
+        .preparing {
+            font-size: var(--preparing-size);
+            max-width: 80vw;
+            margin: 0 auto 30px;
+            line-height: 1.4;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .countdown {
+            font-size: var(--countdown-size);
+            font-weight: 700;
+            line-height: 1;
+            text-shadow: 0 6px 30px rgba(0,0,0,0.8);
+            margin-bottom: 40px;
+        }
+
+        /* Music Player */
+        .music-player {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        #music-btn {
+            background: rgba(255,255,255,0.15);
+            border: 3px solid #fff;
+            color: #fff;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        #music-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255,215,0,0.3);
+        }
+
+        /* Synthesizer Visualizer */
+        #visualizer {
+            display: flex;
+            gap: 6px;
+            height: 60px;
+            align-items: flex-end;
+        }
+
+        .bar {
+            width: 8px;
+            background: linear-gradient(to top, #ffd700, #ff69b4);
+            border-radius: 4px;
+            animation: synthPulse 0.8s infinite alternate ease-in-out;
+            box-shadow: 0 0 12px #ffd700;
+        }
+
+        .bar:nth-child(1) { height: 20px; animation-duration: 0.4s; }
+        .bar:nth-child(2) { height: 35px; animation-duration: 0.55s; }
+        .bar:nth-child(3) { height: 50px; animation-duration: 0.35s; }
+        .bar:nth-child(4) { height: 28px; animation-duration: 0.65s; }
+        .bar:nth-child(5) { height: 40px; animation-duration: 0.45s; }
+
+        @keyframes synthPulse {
+            from { height: 12px; }
+            to { height: 68px; }
+        }
+
+        .playing .bar {
+            animation-play-state: running;
+        }
+
+        .paused .bar {
+            animation-play-state: paused;
+            height: 12px !important;
+        }
+
+        /* Responsive Mobile First */
+        @media (max-width: 480px) {
+            :root {
+                --name-size: 3.8rem;
+                --countdown-size: 4.2rem;
+            }
+            .names { margin-bottom: 5px; }
+            .ampersand { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Carousel -->
+    <div id="bg-container">
+        <div id="bg1" class="bg active"></div>
+        <div id="bg2" class="bg"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="overlay">
+        <div class="content">
+            <div id="names" class="names">Nama Pengantin</div>
+            <div class="ampersand">&amp;</div>
+            <div id="names2" class="names" style="margin-top:-15px;">Nama Pengantin</div>
+            
+            <div id="coming-soon" class="coming-soon">Coming soon</div>
+            <div id="preparing" class="preparing">Sedang mempersiapkan hari spesial kami</div>
+            
+            <div id="countdown" class="countdown">Tinggal 99 hari lagi acaranya</div>
+        </div>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player">
+        <div id="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div id="music-btn" onclick="toggleMusic()">▶️</div>
+    </div>
+
+    <audio id="bg-music" loop></audio>
+
+    <script>
+        // ================== CONFIG DEFAULT (jika config.txt gagal dibaca) ==================
+        let config = {
+            bride_name: "Rina",
+            groom_name: "Dika",
+            event_date: "2026-06-15",
+            coming_soon: "Coming soon",
+            preparing_text: "Sedang mempersiapkan hari spesial kami",
+            countdown_prefix: "Tinggal ",
+            countdown_suffix: " hari lagi acaranya",
+            images: "1.jpg,2.jpg,3.jpg,4.jpg,5.jpg",   // nama file di folder images/
+            music_file: "musik/lagu-pernikahan.mp3",   // nama file di folder musik/
+            font_family: "Dancing Script",             // pilihan: Dancing Script atau Inter
+            name_size: "4.8rem",
+            coming_size: "1.8rem",
+            preparing_size: "1.6rem",
+            countdown_size: "5.5rem"
+        };
+
+        // ================== LOAD CONFIG dari TXT ==================
+        function loadConfig() {
+            fetch('config.txt')
+                .then(response => {
+                    if (!response.ok) throw new Error('Config tidak ditemukan');
+                    return response.text();
+                })
+                .then(text => {
+                    const lines = text.split('\n');
+                    lines.forEach(line => {
+                        line = line.trim();
+                        if (line && line.includes('=')) {
+                            const [key, value] = line.split('=').map(s => s.trim());
+                            if (key && value !== undefined) {
+                                config[key] = value;
+                            }
+                        }
+                    });
+                    console.log('✅ Config berhasil dimuat dari config.txt');
+                    applyConfig();
+                })
+                .catch(err => {
+                    console.log('⚠️ Config.txt tidak ditemukan, menggunakan default');
+                    applyConfig();
+                });
+        }
+
+        // ================== TERAPKAN CONFIG ==================
+        function applyConfig() {
+            // Nama pengantin
+            document.getElementById('names').textContent = config.bride_name || 'Rina';
+            document.getElementById('names2').textContent = config.groom_name || 'Dika';
+
+            // Teks kalimat
+            document.getElementById('coming-soon').textContent = config.coming_soon || 'Coming soon';
+            document.getElementById('preparing').textContent = config.preparing_text || 'Sedang mempersiapkan hari spesial kami';
+
+            // Font family
+            let fontFamily = config.font_family === 'Inter' 
+                ? "'Inter', sans-serif" 
+                : "'Dancing Script', cursive";
+            document.documentElement.style.setProperty('--font-family', fontFamily);
+
+            // Ukuran font
+            document.documentElement.style.setProperty('--name-size', config.name_size || '4.8rem');
+            document.documentElement.style.setProperty('--coming-size', config.coming_size || '1.8rem');
+            document.documentElement.style.setProperty('--preparing-size', config.preparing_size || '1.6rem');
+            document.documentElement.style.setProperty('--countdown-size', config.countdown_size || '5.5rem');
+
+            // Music
+            const audio = document.getElementById('bg-music');
+            if (config.music_file) {
+                audio.src = config.music_file;
+            }
+
+            // Images untuk carousel
+            let imageList = [];
+            if (config.images) {
+                imageList = config.images.split(',').map(img => `images/${img.trim()}`);
+            } else {
+                imageList = ['images/1.jpg', 'images/2.jpg']; // fallback
+            }
+
+            // Mulai carousel
+            startCarousel(imageList);
+
+            // Hitung & tampilkan countdown
+            updateCountdown();
+        }
+
+        // ================== CAROUSEL BACKGROUND ==================
+        let currentIndex = 0;
+        let bg1 = document.getElementById('bg1');
+        let bg2 = document.getElementById('bg2');
+        let activeBg = bg1;
+
+        function startCarousel(images) {
+            if (images.length === 0) return;
+
+            // Preload semua gambar
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+
+            // Set gambar pertama
+            bg1.style.backgroundImage = `url('${images[0]}')`;
+            bg1.classList.add('active');
+
+            if (images.length < 2) return;
+
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % images.length;
+                const nextBg = activeBg === bg1 ? bg2 : bg1;
+                
+                nextBg.style.backgroundImage = `url('${images[currentIndex]}')`;
+                nextBg.style.opacity = '1';
+                activeBg.style.opacity = '0';
+                
+                activeBg = nextBg;
+            }, 4800); // ganti foto tiap ~4.8 detik
+        }
+
+        // ================== COUNTDOWN ==================
+        function updateCountdown() {
+            const countdownEl = document.getElementById('countdown');
+            const targetDate = new Date(config.event_date);
+            
+            function calculate() {
+                const now = new Date();
+                const diffTime = targetDate - now;
+                
+                if (diffTime <= 0) {
+                    countdownEl.textContent = "Hari ini adalah hari bahagia kami!";
+                    return;
+                }
+                
+                const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                countdownEl.textContent = `${config.countdown_prefix}${daysLeft}${config.countdown_suffix}`;
+            }
+            
+            calculate();
+            // Update setiap 60 detik (cukup akurat untuk hitungan hari)
+            setInterval(calculate, 60000);
+        }
+
+        // ================== MUSIC + SYNTHESIZER ==================
+        let isPlaying = false;
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const visualizer = document.getElementById('visualizer');
+
+        function toggleMusic() {
+            if (!audio.src) {
+                alert('File musik belum ditambahkan di folder musik/');
+                return;
+            }
+
+            if (isPlaying) {
+                audio.pause();
+                musicBtn.innerHTML = '▶️';
+                visualizer.classList.remove('playing');
+                visualizer.classList.add('paused');
+            } else {
+                audio.play().catch(e => {
+                    console.log('Playback gagal (mungkin autoplay diblokir)', e);
+                });
+                musicBtn.innerHTML = '⏸️';
+                visualizer.classList.remove('paused');
+                visualizer.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Klik visualizer juga bisa toggle
+        visualizer.addEventListener('click', toggleMusic);
+
+        // ================== INIT ==================
+        window.onload = function() {
+            loadConfig();
+        };
+    </script>
+</body>
+</html>
