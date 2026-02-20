@@ -2,9 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Countdown Pernikahan Kami</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&amp;family=Inter:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&display=swap');
 
@@ -23,31 +23,35 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;           /* mencegah pull-to-refresh / overscroll */
+            touch-action: manipulation;          /* optimasi touch mobile */
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
             font-family: var(--font-family);
             color: var(--text-color);
-            height: 100vh;
-            overflow: hidden;
             background: #000;
-            position: relative;
+            position: fixed;                     /* penting untuk mobile */
+            inset: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Background Carousel */
         #bg-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 1;
         }
 
         .bg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -59,11 +63,11 @@
             opacity: 1;
         }
 
-        /* Overlay */
+        /* Overlay Content */
         .overlay {
             position: relative;
             z-index: 2;
-            height: 100vh;
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -149,12 +153,16 @@
             background: rgba(255,215,0,0.3);
         }
 
-        /* Synthesizer Visualizer */
+        /* Synthesizer Visualizer - HANYA muncul saat play */
         #visualizer {
-            display: flex;
+            display: none;                      /* default disembunyikan */
             gap: 6px;
             height: 60px;
             align-items: flex-end;
+        }
+
+        .playing #visualizer {
+            display: flex;
         }
 
         .bar {
@@ -176,15 +184,6 @@
             to { height: 68px; }
         }
 
-        .playing .bar {
-            animation-play-state: running;
-        }
-
-        .paused .bar {
-            animation-play-state: paused;
-            height: 12px !important;
-        }
-
         /* Responsive Mobile First */
         @media (max-width: 480px) {
             :root {
@@ -193,6 +192,8 @@
             }
             .names { margin-bottom: 5px; }
             .ampersand { font-size: 2.2rem; }
+            .music-player { bottom: 30px; }
+            #music-btn { width: 60px; height: 60px; font-size: 1.6rem; }
         }
     </style>
 </head>
@@ -208,7 +209,7 @@
     <div class="overlay">
         <div class="content">
             <div id="names" class="names">Nama Pengantin</div>
-            <div class="ampersand">&amp;</div>
+            <div class="ampersand">&</div>
             <div id="names2" class="names" style="margin-top:-15px;">Nama Pengantin</div>
             
             <div id="coming-soon" class="coming-soon">Coming soon</div>
@@ -230,10 +231,10 @@
         <div id="music-btn" onclick="toggleMusic()">▶️</div>
     </div>
 
-    <audio id="bg-music" loop></audio>
+    <audio id="bg-music" loop preload="auto"></audio>
 
     <script>
-        // ================== CONFIG DEFAULT (jika config.txt gagal dibaca) ==================
+        // ================== CONFIG DEFAULT ==================
         let config = {
             bride_name: "Rina",
             groom_name: "Dika",
@@ -242,9 +243,9 @@
             preparing_text: "Sedang mempersiapkan hari spesial kami",
             countdown_prefix: "Tinggal ",
             countdown_suffix: " hari lagi acaranya",
-            images: "1.jpg,2.jpg,3.jpg,4.jpg,5.jpg",   // nama file di folder images/
-            music_file: "musik/lagu-pernikahan.mp3",   // nama file di folder musik/
-            font_family: "Dancing Script",             // pilihan: Dancing Script atau Inter
+            images: "1.jpg,2.jpg,3.jpg,4.jpg,5.jpg",
+            music_file: "musik/lagu-pernikahan.mp3",
+            font_family: "Dancing Script",
             name_size: "4.8rem",
             coming_size: "1.8rem",
             preparing_size: "1.6rem",
@@ -254,89 +255,52 @@
         // ================== LOAD CONFIG dari TXT ==================
         function loadConfig() {
             fetch('config.txt')
-                .then(response => {
-                    if (!response.ok) throw new Error('Config tidak ditemukan');
-                    return response.text();
-                })
+                .then(r => r.ok ? r.text() : Promise.reject())
                 .then(text => {
-                    const lines = text.split('\n');
-                    lines.forEach(line => {
+                    text.split('\n').forEach(line => {
                         line = line.trim();
                         if (line && line.includes('=')) {
-                            const [key, value] = line.split('=').map(s => s.trim());
-                            if (key && value !== undefined) {
-                                config[key] = value;
-                            }
+                            const [k, v] = line.split('=').map(s => s.trim());
+                            if (k && v) config[k] = v;
                         }
                     });
-                    console.log('✅ Config berhasil dimuat dari config.txt');
                     applyConfig();
                 })
-                .catch(err => {
-                    console.log('⚠️ Config.txt tidak ditemukan, menggunakan default');
-                    applyConfig();
-                });
+                .catch(() => applyConfig()); // fallback ke default
         }
 
-        // ================== TERAPKAN CONFIG ==================
         function applyConfig() {
-            // Nama pengantin
-            document.getElementById('names').textContent = config.bride_name || 'Rina';
-            document.getElementById('names2').textContent = config.groom_name || 'Dika';
+            document.getElementById('names').textContent = config.bride_name;
+            document.getElementById('names2').textContent = config.groom_name;
+            document.getElementById('coming-soon').textContent = config.coming_soon;
+            document.getElementById('preparing').textContent = config.preparing_text;
 
-            // Teks kalimat
-            document.getElementById('coming-soon').textContent = config.coming_soon || 'Coming soon';
-            document.getElementById('preparing').textContent = config.preparing_text || 'Sedang mempersiapkan hari spesial kami';
+            const font = config.font_family === 'Inter' ? "'Inter', sans-serif" : "'Dancing Script', cursive";
+            document.documentElement.style.setProperty('--font-family', font);
 
-            // Font family
-            let fontFamily = config.font_family === 'Inter' 
-                ? "'Inter', sans-serif" 
-                : "'Dancing Script', cursive";
-            document.documentElement.style.setProperty('--font-family', fontFamily);
+            document.documentElement.style.setProperty('--name-size', config.name_size);
+            document.documentElement.style.setProperty('--coming-size', config.coming_size);
+            document.documentElement.style.setProperty('--preparing-size', config.preparing_size);
+            document.documentElement.style.setProperty('--countdown-size', config.countdown_size);
 
-            // Ukuran font
-            document.documentElement.style.setProperty('--name-size', config.name_size || '4.8rem');
-            document.documentElement.style.setProperty('--coming-size', config.coming_size || '1.8rem');
-            document.documentElement.style.setProperty('--preparing-size', config.preparing_size || '1.6rem');
-            document.documentElement.style.setProperty('--countdown-size', config.countdown_size || '5.5rem');
-
-            // Music
-            const audio = document.getElementById('bg-music');
             if (config.music_file) {
-                audio.src = config.music_file;
+                document.getElementById('bg-music').src = config.music_file;
             }
 
-            // Images untuk carousel
-            let imageList = [];
-            if (config.images) {
-                imageList = config.images.split(',').map(img => `images/${img.trim()}`);
-            } else {
-                imageList = ['images/1.jpg', 'images/2.jpg']; // fallback
-            }
-
-            // Mulai carousel
+            const imageList = (config.images || '1.jpg,2.jpg').split(',').map(img => `images/${img.trim()}`);
             startCarousel(imageList);
 
-            // Hitung & tampilkan countdown
             updateCountdown();
         }
 
-        // ================== CAROUSEL BACKGROUND ==================
+        // ================== CAROUSEL ==================
         let currentIndex = 0;
-        let bg1 = document.getElementById('bg1');
-        let bg2 = document.getElementById('bg2');
+        const bg1 = document.getElementById('bg1');
+        const bg2 = document.getElementById('bg2');
         let activeBg = bg1;
 
         function startCarousel(images) {
-            if (images.length === 0) return;
-
-            // Preload semua gambar
-            images.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
-
-            // Set gambar pertama
+            if (!images.length) return;
             bg1.style.backgroundImage = `url('${images[0]}')`;
             bg1.classList.add('active');
 
@@ -344,74 +308,66 @@
 
             setInterval(() => {
                 currentIndex = (currentIndex + 1) % images.length;
-                const nextBg = activeBg === bg1 ? bg2 : bg1;
-                
-                nextBg.style.backgroundImage = `url('${images[currentIndex]}')`;
-                nextBg.style.opacity = '1';
+                const next = activeBg === bg1 ? bg2 : bg1;
+                next.style.backgroundImage = `url('${images[currentIndex]}')`;
+                next.style.opacity = '1';
                 activeBg.style.opacity = '0';
-                
-                activeBg = nextBg;
-            }, 4800); // ganti foto tiap ~4.8 detik
+                activeBg = next;
+            }, 4800);
         }
 
         // ================== COUNTDOWN ==================
         function updateCountdown() {
-            const countdownEl = document.getElementById('countdown');
-            const targetDate = new Date(config.event_date);
-            
-            function calculate() {
-                const now = new Date();
-                const diffTime = targetDate - now;
-                
-                if (diffTime <= 0) {
-                    countdownEl.textContent = "Hari ini adalah hari bahagia kami!";
+            const el = document.getElementById('countdown');
+            const target = new Date(config.event_date);
+            function tick() {
+                const diff = target - new Date();
+                if (diff <= 0) {
+                    el.textContent = "Hari ini adalah hari bahagia kami!";
                     return;
                 }
-                
-                const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                countdownEl.textContent = `${config.countdown_prefix}${daysLeft}${config.countdown_suffix}`;
+                const days = Math.ceil(diff / 86400000);
+                el.textContent = `${config.countdown_prefix}${days}${config.countdown_suffix}`;
             }
-            
-            calculate();
-            // Update setiap 60 detik (cukup akurat untuk hitungan hari)
-            setInterval(calculate, 60000);
+            tick();
+            setInterval(tick, 60000);
         }
 
-        // ================== MUSIC + SYNTHESIZER ==================
-        let isPlaying = false;
+        // ================== MUSIC + VISUALIZER ==================
         const audio = document.getElementById('bg-music');
-        const musicBtn = document.getElementById('music-btn');
-        const visualizer = document.getElementById('visualizer');
+        const btn = document.getElementById('music-btn');
+        const player = document.querySelector('.music-player');
+        let isPlaying = false;
 
         function toggleMusic() {
             if (!audio.src) {
-                alert('File musik belum ditambahkan di folder musik/');
+                alert('File musik belum ditemukan di config.txt');
                 return;
             }
 
             if (isPlaying) {
                 audio.pause();
-                musicBtn.innerHTML = '▶️';
-                visualizer.classList.remove('playing');
-                visualizer.classList.add('paused');
+                btn.innerHTML = '▶️';
+                player.classList.remove('playing');
             } else {
-                audio.play().catch(e => {
-                    console.log('Playback gagal (mungkin autoplay diblokir)', e);
+                audio.play().catch(() => {
+                    // Autoplay mungkin diblokir → user harus klik dulu
                 });
-                musicBtn.innerHTML = '⏸️';
-                visualizer.classList.remove('paused');
-                visualizer.classList.add('playing');
+                btn.innerHTML = '⏸️';
+                player.classList.add('playing');
             }
             isPlaying = !isPlaying;
         }
 
-        // Klik visualizer juga bisa toggle
-        visualizer.addEventListener('click', toggleMusic);
-
         // ================== INIT ==================
-        window.onload = function() {
-            loadConfig();
-        };
+        window.onload = loadConfig;
+
+        // Tambahan pencegahan scroll ekstra di mobile
+        document.addEventListener('touchmove', e => {
+            if (e.touches.length === 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </body>
 </html>
