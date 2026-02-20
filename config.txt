@@ -1,6 +1,6 @@
-bride_name=Anindya
-groom_name=Satria
-event_date=2026-07-18
+bride_name=Kande
+groom_name=Ian
+event_date=2026-04-12
 coming_soon=We’re Getting Married
 preparing_text=Sedang mempersiapkan momen terindah dalam hidup kami
 
