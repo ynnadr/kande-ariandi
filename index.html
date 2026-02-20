@@ -1,373 +1,386 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Countdown Pernikahan Kami</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Countdown Pernikahan Kami</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --font-family: 'Dancing Script', cursive;
+      --name-size: 4.8rem;
+      --coming-size: 1.8rem;
+      --preparing-size: 1.6rem;
+      --countdown-size: 5.5rem;
+      --text-color: #ffffff;
+    }
 
-        :root {
-            --font-family: 'Dancing Script', cursive;
-            --name-size: 4.8rem;
-            --coming-size: 1.8rem;
-            --preparing-size: 1.6rem;
-            --countdown-size: 5.5rem;
-            --text-color: #fff;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        html, body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            overscroll-behavior: none;           /* mencegah pull-to-refresh / overscroll */
-            touch-action: manipulation;          /* optimasi touch mobile */
-            -webkit-overflow-scrolling: touch;
-        }
+    body {
+      font-family: var(--font-family);
+      color: var(--text-color);
+      background: #000;
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+    }
 
-        body {
-            font-family: var(--font-family);
-            color: var(--text-color);
-            background: #000;
-            position: fixed;                     /* penting untuk mobile */
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-        }
+    #bg-container {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
 
-        /* Background Carousel */
-        #bg-container {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-        }
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: opacity 1.8s ease-in-out;
+      opacity: 0;
+    }
 
-        .bg {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: opacity 1.8s ease-in-out;
-            opacity: 0;
-        }
+    .bg.active {
+      opacity: 1;
+    }
 
-        .bg.active {
-            opacity: 1;
-        }
+    .overlay {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.55));
+    }
 
-        /* Overlay Content */
-        .overlay {
-            position: relative;
-            z-index: 2;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.55));
-        }
+    .content {
+      max-width: 90vw;
+    }
 
-        .content {
-            max-width: 90vw;
-        }
+    .names {
+      font-size: var(--name-size);
+      line-height: 1.05;
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.75);
+    }
 
-        .names {
-            font-size: var(--name-size);
-            line-height: 1.1;
-            margin-bottom: 10px;
-            font-weight: 700;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.7);
-        }
+    .ampersand {
+      font-size: 2.8rem;
+      margin: 6px 0;
+      opacity: 0.92;
+    }
 
-        .ampersand {
-            font-size: 3rem;
-            margin: 10px 0;
-            opacity: 0.9;
-        }
+    .coming-soon {
+      font-size: var(--coming-size);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin: 12px 0 6px;
+      opacity: 0.95;
+    }
 
-        .coming-soon {
-            font-size: var(--coming-size);
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            opacity: 0.95;
-        }
+    .preparing {
+      font-size: var(--preparing-size);
+      max-width: 80vw;
+      margin: 0 auto 28px;
+      line-height: 1.45;
+      font-family: 'Inter', sans-serif;
+    }
 
-        .preparing {
-            font-size: var(--preparing-size);
-            max-width: 80vw;
-            margin: 0 auto 30px;
-            line-height: 1.4;
-            font-family: 'Inter', sans-serif;
-        }
+    .countdown {
+      font-size: var(--countdown-size);
+      font-weight: 700;
+      line-height: 1.1;
+      text-shadow: 0 6px 30px rgba(0,0,0,0.8);
+      margin-bottom: 50px;
+    }
 
-        .countdown {
-            font-size: var(--countdown-size);
-            font-weight: 700;
-            line-height: 1;
-            text-shadow: 0 6px 30px rgba(0,0,0,0.8);
-            margin-bottom: 40px;
-        }
+    .music-player {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      z-index: 10;
+    }
 
-        /* Music Player */
-        .music-player {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            z-index: 10;
-        }
+    #music-btn {
+      background: rgba(255,255,255,0.18);
+      border: 3px solid #fff;
+      color: white;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      font-size: 1.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.28s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
 
-        #music-btn {
-            background: rgba(255,255,255,0.15);
-            border: 3px solid #fff;
-            color: #fff;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
+    #music-btn:hover {
+      transform: scale(1.08);
+      background: rgba(255,215,0,0.25);
+    }
 
-        #music-btn:hover {
-            transform: scale(1.1);
-            background: rgba(255,215,0,0.3);
-        }
+    #visualizer {
+      display: none;
+      gap: 6px;
+      height: 64px;
+      align-items: flex-end;
+    }
 
-        /* Synthesizer Visualizer - HANYA muncul saat play */
-        #visualizer {
-            display: none;                      /* default disembunyikan */
-            gap: 6px;
-            height: 60px;
-            align-items: flex-end;
-        }
+    .playing #visualizer {
+      display: flex;
+    }
 
-        .playing #visualizer {
-            display: flex;
-        }
+    .bar {
+      width: 8px;
+      background: linear-gradient(to top, #ffd700, #ff69b4);
+      border-radius: 4px;
+      animation: synthPulse 0.8s infinite alternate ease-in-out;
+      box-shadow: 0 0 12px #ffd70080;
+    }
 
-        .bar {
-            width: 8px;
-            background: linear-gradient(to top, #ffd700, #ff69b4);
-            border-radius: 4px;
-            animation: synthPulse 0.8s infinite alternate ease-in-out;
-            box-shadow: 0 0 12px #ffd700;
-        }
+    .bar:nth-child(1) { height: 22px; animation-duration: 0.42s; }
+    .bar:nth-child(2) { height: 38px; animation-duration: 0.58s; }
+    .bar:nth-child(3) { height: 54px; animation-duration: 0.36s; }
+    .bar:nth-child(4) { height: 30px; animation-duration: 0.68s; }
+    .bar:nth-child(5) { height: 44px; animation-duration: 0.48s; }
 
-        .bar:nth-child(1) { height: 20px; animation-duration: 0.4s; }
-        .bar:nth-child(2) { height: 35px; animation-duration: 0.55s; }
-        .bar:nth-child(3) { height: 50px; animation-duration: 0.35s; }
-        .bar:nth-child(4) { height: 28px; animation-duration: 0.65s; }
-        .bar:nth-child(5) { height: 40px; animation-duration: 0.45s; }
+    @keyframes synthPulse {
+      from { height: 14px; }
+      to   { height: 72px; }
+    }
 
-        @keyframes synthPulse {
-            from { height: 12px; }
-            to { height: 68px; }
-        }
-
-        /* Responsive Mobile First */
-        @media (max-width: 480px) {
-            :root {
-                --name-size: 3.8rem;
-                --countdown-size: 4.2rem;
-            }
-            .names { margin-bottom: 5px; }
-            .ampersand { font-size: 2.2rem; }
-            .music-player { bottom: 30px; }
-            #music-btn { width: 60px; height: 60px; font-size: 1.6rem; }
-        }
-    </style>
+    @media (max-width: 480px) {
+      :root {
+        --name-size: 3.9rem;
+        --countdown-size: 4.4rem;
+      }
+      .ampersand { font-size: 2.4rem; }
+      .music-player { bottom: 32px; }
+      #music-btn { width: 64px; height: 64px; font-size: 1.7rem; }
+      #visualizer { height: 54px; }
+      .bar { width: 7px; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Background Carousel -->
-    <div id="bg-container">
-        <div id="bg1" class="bg active"></div>
-        <div id="bg2" class="bg"></div>
+  <div id="bg-container">
+    <div id="bg1" class="bg active"></div>
+    <div id="bg2" class="bg"></div>
+  </div>
+
+  <div class="overlay">
+    <div class="content">
+      <div id="bride" class="names"></div>
+      <div class="ampersand">&</div>
+      <div id="groom" class="names"></div>
+
+      <div id="coming-soon" class="coming-soon"></div>
+      <div id="preparing" class="preparing"></div>
+
+      <div id="countdown" class="countdown"></div>
     </div>
+  </div>
 
-    <!-- Content -->
-    <div class="overlay">
-        <div class="content">
-            <div id="names" class="names">Nama Pengantin</div>
-            <div class="ampersand">&</div>
-            <div id="names2" class="names" style="margin-top:-15px;">Nama Pengantin</div>
-            
-            <div id="coming-soon" class="coming-soon">Coming soon</div>
-            <div id="preparing" class="preparing">Sedang mempersiapkan hari spesial kami</div>
-            
-            <div id="countdown" class="countdown">Tinggal 99 hari lagi acaranya</div>
-        </div>
+  <div class="music-player">
+    <div id="visualizer">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
     </div>
+    <div id="music-btn" onclick="toggleMusic()">▶️</div>
+  </div>
 
-    <!-- Music Player -->
-    <div class="music-player">
-        <div id="visualizer">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </div>
-        <div id="music-btn" onclick="toggleMusic()">▶️</div>
-    </div>
+  <audio id="bg-music" loop preload="auto"></audio>
 
-    <audio id="bg-music" loop preload="auto"></audio>
+  <script>
+    // ────────────────────────────────────────────────
+    // CONFIG DEFAULT
+    // ────────────────────────────────────────────────
+    let config = {
+      bride_name: "Rina",
+      groom_name: "Dika",
+      event_date: "2026-06-15",
+      coming_soon: "Coming soon",
+      preparing_text: "Sedang mempersiapkan hari spesial kami",
+      countdown_prefix: "Tinggal ",
+      countdown_number_prefix: "",
+      countdown_number_suffix: "",
+      countdown_suffix: " hari lagi acaranya",
+      images: "1.jpg,2.jpg,3.jpg,4.jpg,5.jpg",
+      music_file: "musik/lagu-pernikahan.mp3",
+      font_family: "Dancing Script",
+      name_size: "4.8rem",
+      coming_size: "1.8rem",
+      preparing_size: "1.6rem",
+      countdown_size: "5.5rem"
+    };
 
-    <script>
-        // ================== CONFIG DEFAULT ==================
-        let config = {
-            bride_name: "Rina",
-            groom_name: "Dika",
-            event_date: "2026-06-15",
-            coming_soon: "Coming soon",
-            preparing_text: "Sedang mempersiapkan hari spesial kami",
-            countdown_prefix: "Tinggal ",
-            countdown_suffix: " hari lagi acaranya",
-            images: "1.jpg,2.jpg,3.jpg,4.jpg,5.jpg",
-            music_file: "musik/lagu-pernikahan.mp3",
-            font_family: "Dancing Script",
-            name_size: "4.8rem",
-            coming_size: "1.8rem",
-            preparing_size: "1.6rem",
-            countdown_size: "5.5rem"
-        };
+    // ────────────────────────────────────────────────
+    // LOAD CONFIG.TXT
+    // ────────────────────────────────────────────────
+    function loadConfig() {
+      fetch('config.txt')
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(text => {
+          text.split('\n').forEach(line => {
+            line = line.trim();
+            if (!line || line.startsWith('//') || !line.includes('=')) return;
+            const [key, ...valueParts] = line.split('=');
+            const value = valueParts.join('=').trim();
+            if (key && value) config[key.trim()] = value;
+          });
+        })
+        .catch(() => console.log('config.txt tidak ditemukan → pakai default'))
+        .finally(applyConfig);
+    }
 
-        // ================== LOAD CONFIG dari TXT ==================
-        function loadConfig() {
-            fetch('config.txt')
-                .then(r => r.ok ? r.text() : Promise.reject())
-                .then(text => {
-                    text.split('\n').forEach(line => {
-                        line = line.trim();
-                        if (line && line.includes('=')) {
-                            const [k, v] = line.split('=').map(s => s.trim());
-                            if (k && v) config[k] = v;
-                        }
-                    });
-                    applyConfig();
-                })
-                .catch(() => applyConfig()); // fallback ke default
+    function applyConfig() {
+      document.getElementById('bride').textContent = config.bride_name || 'Rina';
+      document.getElementById('groom').textContent = config.groom_name || 'Dika';
+
+      document.getElementById('coming-soon').textContent = config.coming_soon || 'Coming soon';
+      document.getElementById('preparing').textContent = config.preparing_text || 'Sedang mempersiapkan hari spesial kami';
+
+      const font = config.font_family === 'Inter' ? "'Inter', sans-serif" : "'Dancing Script', cursive";
+      document.documentElement.style.setProperty('--font-family', font);
+
+      document.documentElement.style.setProperty('--name-size', config.name_size || '4.8rem');
+      document.documentElement.style.setProperty('--coming-size', config.coming_size || '1.8rem');
+      document.documentElement.style.setProperty('--preparing-size', config.preparing_size || '1.6rem');
+      document.documentElement.style.setProperty('--countdown-size', config.countdown_size || '5.5rem');
+
+      if (config.music_file) {
+        document.getElementById('bg-music').src = config.music_file;
+      }
+
+      const imgs = (config.images || '1.jpg,2.jpg').split(',').map(s => `images/${s.trim()}`);
+      startCarousel(imgs);
+
+      updateCountdown();
+    }
+
+    // ────────────────────────────────────────────────
+    // BACKGROUND CAROUSEL
+    // ────────────────────────────────────────────────
+    let idx = 0;
+    const bg1 = document.getElementById('bg1');
+    const bg2 = document.getElementById('bg2');
+    let active = bg1;
+
+    function startCarousel(list) {
+      if (!list.length) return;
+      bg1.style.backgroundImage = `url('${list[0]}')`;
+      bg1.classList.add('active');
+
+      if (list.length < 2) return;
+
+      setInterval(() => {
+        idx = (idx + 1) % list.length;
+        const next = active === bg1 ? bg2 : bg1;
+        next.style.backgroundImage = `url('${list[idx]}')`;
+        next.style.opacity = '1';
+        active.style.opacity = '0';
+        active = next;
+      }, 5200);
+    }
+
+    // ────────────────────────────────────────────────
+    // COUNTDOWN (support HTML di prefix/suffix)
+    // ────────────────────────────────────────────────
+    function updateCountdown() {
+      const el = document.getElementById('countdown');
+      const target = new Date(config.event_date);
+
+      function tick() {
+        const diff = target - new Date();
+        if (diff <= 0) {
+          el.innerHTML = "Hari ini adalah hari bahagia kami!";
+          return;
         }
 
-        function applyConfig() {
-            document.getElementById('names').textContent = config.bride_name;
-            document.getElementById('names2').textContent = config.groom_name;
-            document.getElementById('coming-soon').textContent = config.coming_soon;
-            document.getElementById('preparing').textContent = config.preparing_text;
+        const days = Math.ceil(diff / 86400000);
+        el.innerHTML =
+          (config.countdown_prefix || 'Tinggal ') +
+          (config.countdown_number_prefix || '') +
+          days +
+          (config.countdown_number_suffix || '') +
+          (config.countdown_suffix || ' hari lagi acaranya');
+      }
 
-            const font = config.font_family === 'Inter' ? "'Inter', sans-serif" : "'Dancing Script', cursive";
-            document.documentElement.style.setProperty('--font-family', font);
+      tick();
+      setInterval(tick, 60000);
+    }
 
-            document.documentElement.style.setProperty('--name-size', config.name_size);
-            document.documentElement.style.setProperty('--coming-size', config.coming_size);
-            document.documentElement.style.setProperty('--preparing-size', config.preparing_size);
-            document.documentElement.style.setProperty('--countdown-size', config.countdown_size);
+    // ────────────────────────────────────────────────
+    // MUSIC + VISUALIZER
+    // ────────────────────────────────────────────────
+    const audio = document.getElementById('bg-music');
+    const btn = document.getElementById('music-btn');
+    const player = document.querySelector('.music-player');
+    let playing = false;
 
-            if (config.music_file) {
-                document.getElementById('bg-music').src = config.music_file;
-            }
+    function toggleMusic() {
+      if (!audio.src) {
+        alert('File musik belum ditentukan di config.txt');
+        return;
+      }
 
-            const imageList = (config.images || '1.jpg,2.jpg').split(',').map(img => `images/${img.trim()}`);
-            startCarousel(imageList);
+      if (playing) {
+        audio.pause();
+        btn.innerHTML = '▶️';
+        player.classList.remove('playing');
+      } else {
+        audio.play().catch(() => {});
+        btn.innerHTML = '⏸️';
+        player.classList.add('playing');
+      }
+      playing = !playing;
+    }
 
-            updateCountdown();
-        }
+    // ────────────────────────────────────────────────
+    // INIT
+    // ────────────────────────────────────────────────
+    window.onload = loadConfig;
 
-        // ================== CAROUSEL ==================
-        let currentIndex = 0;
-        const bg1 = document.getElementById('bg1');
-        const bg2 = document.getElementById('bg2');
-        let activeBg = bg1;
-
-        function startCarousel(images) {
-            if (!images.length) return;
-            bg1.style.backgroundImage = `url('${images[0]}')`;
-            bg1.classList.add('active');
-
-            if (images.length < 2) return;
-
-            setInterval(() => {
-                currentIndex = (currentIndex + 1) % images.length;
-                const next = activeBg === bg1 ? bg2 : bg1;
-                next.style.backgroundImage = `url('${images[currentIndex]}')`;
-                next.style.opacity = '1';
-                activeBg.style.opacity = '0';
-                activeBg = next;
-            }, 4800);
-        }
-
-        // ================== COUNTDOWN ==================
-        function updateCountdown() {
-            const el = document.getElementById('countdown');
-            const target = new Date(config.event_date);
-            function tick() {
-                const diff = target - new Date();
-                if (diff <= 0) {
-                    el.textContent = "Hari ini adalah hari bahagia kami!";
-                    return;
-                }
-                const days = Math.ceil(diff / 86400000);
-                el.textContent = `${config.countdown_prefix}${days}${config.countdown_suffix}`;
-            }
-            tick();
-            setInterval(tick, 60000);
-        }
-
-        // ================== MUSIC + VISUALIZER ==================
-        const audio = document.getElementById('bg-music');
-        const btn = document.getElementById('music-btn');
-        const player = document.querySelector('.music-player');
-        let isPlaying = false;
-
-        function toggleMusic() {
-            if (!audio.src) {
-                alert('File musik belum ditemukan di config.txt');
-                return;
-            }
-
-            if (isPlaying) {
-                audio.pause();
-                btn.innerHTML = '▶️';
-                player.classList.remove('playing');
-            } else {
-                audio.play().catch(() => {
-                    // Autoplay mungkin diblokir → user harus klik dulu
-                });
-                btn.innerHTML = '⏸️';
-                player.classList.add('playing');
-            }
-            isPlaying = !isPlaying;
-        }
-
-        // ================== INIT ==================
-        window.onload = loadConfig;
-
-        // Tambahan pencegahan scroll ekstra di mobile
-        document.addEventListener('touchmove', e => {
-            if (e.touches.length === 1) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-    </script>
+    // Blokir scroll ekstra (mobile)
+    document.addEventListener('touchmove', e => {
+      if (e.touches.length === 1) e.preventDefault();
+    }, { passive: false });
+  </script>
 </body>
 </html>
