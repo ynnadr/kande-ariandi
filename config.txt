@@ -1,14 +1,19 @@
-bride_name=Kande
-groom_name=Ian
-event_date=2026-04-12
-coming_soon=Coming soon
-preparing_text=Sedang mempersiapkan hari spesial kami
+bride_name=Anindya
+groom_name=Satria
+event_date=2026-07-18
+coming_soon=We’re Getting Married
+preparing_text=Sedang mempersiapkan momen terindah dalam hidup kami
+
 countdown_prefix=Tinggal 
-countdown_suffix= hari lagi acaranya
+countdown_number_prefix=<b style="color:#ffd700; font-size:1.35em; text-shadow:0 0 15px #ffd70080;">
+countdown_number_suffix=</b>
+countdown_suffix= &nbsp;hari lagi <i>acaranya</i> 💍
+
 images=IMG_5160.JPG,IMG_5126.JPG,IMG_5136.JPG,IMG_5141.JPG,IMG_5232.JPG,IMG_5201.JPG,IMG_5202.JPG
 music_file=musik/song1.mp3
+
 font_family=Dancing Script
-name_size=4.8rem
-coming_size=1.8rem
-preparing_size=1.6rem
+name_size=5.2rem
+coming_size=2rem
+preparing_size=1.7rem
 countdown_size=1.6rem
