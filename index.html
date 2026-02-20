@@ -126,35 +126,35 @@
       transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 12px;
       z-index: 10;
     }
 
     #music-btn {
       background: rgba(255,255,255,0.18);
-      border: 3px solid #fff;
+      border: 2px solid #fff;
       color: white;
-      width: 72px;
-      height: 72px;
+      width: 36px;                /* dikecilin jadi setengah */
+      height: 36px;
       border-radius: 50%;
-      font-size: 1.9rem;
+      font-size: 1.1rem;          /* icon lebih kecil & proporsional */
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.28s ease;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     #music-btn:hover {
-      transform: scale(1.08);
-      background: rgba(255,215,0,0.25);
+      transform: scale(1.15);
+      background: rgba(255,215,0,0.3);
     }
 
     #visualizer {
       display: none;
-      gap: 6px;
-      height: 64px;
+      gap: 4px;
+      height: 32px;               /* setengah dari sebelumnya */
       align-items: flex-end;
     }
 
@@ -163,22 +163,22 @@
     }
 
     .bar {
-      width: 8px;
+      width: 4px;                 /* lebih kecil */
       background: linear-gradient(to top, #ffd700, #ff69b4);
-      border-radius: 4px;
+      border-radius: 2px;
       animation: synthPulse 0.8s infinite alternate ease-in-out;
-      box-shadow: 0 0 12px #ffd70080;
+      box-shadow: 0 0 8px #ffd70060;
     }
 
-    .bar:nth-child(1) { height: 22px; animation-duration: 0.42s; }
-    .bar:nth-child(2) { height: 38px; animation-duration: 0.58s; }
-    .bar:nth-child(3) { height: 54px; animation-duration: 0.36s; }
-    .bar:nth-child(4) { height: 30px; animation-duration: 0.68s; }
-    .bar:nth-child(5) { height: 44px; animation-duration: 0.48s; }
+    .bar:nth-child(1) { height: 11px; animation-duration: 0.42s; }
+    .bar:nth-child(2) { height: 19px; animation-duration: 0.58s; }
+    .bar:nth-child(3) { height: 27px; animation-duration: 0.36s; }
+    .bar:nth-child(4) { height: 15px; animation-duration: 0.68s; }
+    .bar:nth-child(5) { height: 22px; animation-duration: 0.48s; }
 
     @keyframes synthPulse {
-      from { height: 14px; }
-      to   { height: 72px; }
+      from { height: 7px; }
+      to   { height: 36px; }
     }
 
     @media (max-width: 480px) {
@@ -187,10 +187,10 @@
         --countdown-size: 4.4rem;
       }
       .ampersand { font-size: 2.4rem; }
-      .music-player { bottom: 32px; }
-      #music-btn { width: 64px; height: 64px; font-size: 1.7rem; }
-      #visualizer { height: 54px; }
-      .bar { width: 7px; }
+      .music-player { bottom: 32px; gap: 10px; }
+      #music-btn { width: 32px; height: 32px; font-size: 1rem; }
+      #visualizer { height: 28px; }
+      .bar { width: 3.5px; }
     }
   </style>
 </head>
@@ -228,9 +228,7 @@
   <audio id="bg-music" loop preload="auto"></audio>
 
   <script>
-    // ────────────────────────────────────────────────
-    // CONFIG DEFAULT
-    // ────────────────────────────────────────────────
+    // CONFIG DEFAULT (sama seperti sebelumnya)
     let config = {
       bride_name: "Rina",
       groom_name: "Dika",
@@ -250,9 +248,7 @@
       countdown_size: "5.5rem"
     };
 
-    // ────────────────────────────────────────────────
-    // LOAD CONFIG.TXT
-    // ────────────────────────────────────────────────
+    // LOAD CONFIG.TXT (sama)
     function loadConfig() {
       fetch('config.txt')
         .then(r => r.ok ? r.text() : Promise.reject())
@@ -265,14 +261,13 @@
             if (key && value) config[key.trim()] = value;
           });
         })
-        .catch(() => console.log('config.txt tidak ditemukan → pakai default'))
+        .catch(() => {})
         .finally(applyConfig);
     }
 
     function applyConfig() {
       document.getElementById('bride').textContent = config.bride_name || 'Rina';
       document.getElementById('groom').textContent = config.groom_name || 'Dika';
-
       document.getElementById('coming-soon').textContent = config.coming_soon || 'Coming soon';
       document.getElementById('preparing').textContent = config.preparing_text || 'Sedang mempersiapkan hari spesial kami';
 
@@ -284,9 +279,7 @@
       document.documentElement.style.setProperty('--preparing-size', config.preparing_size || '1.6rem');
       document.documentElement.style.setProperty('--countdown-size', config.countdown_size || '5.5rem');
 
-      if (config.music_file) {
-        document.getElementById('bg-music').src = config.music_file;
-      }
+      if (config.music_file) document.getElementById('bg-music').src = config.music_file;
 
       const imgs = (config.images || '1.jpg,2.jpg').split(',').map(s => `images/${s.trim()}`);
       startCarousel(imgs);
@@ -294,9 +287,7 @@
       updateCountdown();
     }
 
-    // ────────────────────────────────────────────────
-    // BACKGROUND CAROUSEL
-    // ────────────────────────────────────────────────
+    // CAROUSEL (sama)
     let idx = 0;
     const bg1 = document.getElementById('bg1');
     const bg2 = document.getElementById('bg2');
@@ -306,9 +297,7 @@
       if (!list.length) return;
       bg1.style.backgroundImage = `url('${list[0]}')`;
       bg1.classList.add('active');
-
       if (list.length < 2) return;
-
       setInterval(() => {
         idx = (idx + 1) % list.length;
         const next = active === bg1 ? bg2 : bg1;
@@ -319,9 +308,7 @@
       }, 5200);
     }
 
-    // ────────────────────────────────────────────────
-    // COUNTDOWN (support HTML di prefix/suffix)
-    // ────────────────────────────────────────────────
+    // COUNTDOWN (support HTML)
     function updateCountdown() {
       const el = document.getElementById('countdown');
       const target = new Date(config.event_date);
@@ -332,7 +319,6 @@
           el.innerHTML = "Hari ini adalah hari bahagia kami!";
           return;
         }
-
         const days = Math.ceil(diff / 86400000);
         el.innerHTML =
           (config.countdown_prefix || 'Tinggal ') +
@@ -346,9 +332,7 @@
       setInterval(tick, 60000);
     }
 
-    // ────────────────────────────────────────────────
     // MUSIC + VISUALIZER
-    // ────────────────────────────────────────────────
     const audio = document.getElementById('bg-music');
     const btn = document.getElementById('music-btn');
     const player = document.querySelector('.music-player');
@@ -359,7 +343,6 @@
         alert('File musik belum ditentukan di config.txt');
         return;
       }
-
       if (playing) {
         audio.pause();
         btn.innerHTML = '▶️';
@@ -372,12 +355,9 @@
       playing = !playing;
     }
 
-    // ────────────────────────────────────────────────
     // INIT
-    // ────────────────────────────────────────────────
     window.onload = loadConfig;
 
-    // Blokir scroll ekstra (mobile)
     document.addEventListener('touchmove', e => {
       if (e.touches.length === 1) e.preventDefault();
     }, { passive: false });
